@@ -1,7 +1,7 @@
 import { ObjectSchema } from 'realm';
 
 export interface Message {
-  context: string;
+  content: string;
   createdAt: Date;
 };
 

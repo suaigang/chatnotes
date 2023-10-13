@@ -1,22 +1,12 @@
-import Realm from 'realm';
-import { MessageSchema } from './schemas';
+import { createStore, combineReducers, Store } from 'redux';
+import messageReducer from './reducers/messageReducer';
 
-class Database {
-  private static instance: Realm;
+const rootReducer = combineReducers({
+  messages: messageReducer
+});
 
-  static getRealmInstance(): Realm {
-    if (!this.instance) {
-      this.instance = new Realm({ schema: [MessageSchema] });
-    }
-    return this.instance;
-  }
+export type AppState = ReturnType<typeof rootReducer>;
 
-  static close(): void {
-    if (this.instance) {
-      this.instance.close();
-    }
-  }
+const store: Store<AppState> = createStore(rootReducer);
 
-}
-
-export default Database;
+export default store;
