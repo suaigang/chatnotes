@@ -1,35 +1,30 @@
 import { useNavigation } from '@react-navigation/native';
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { View, Text, Button, StyleSheet, TouchableOpacity } from 'react-native';
 import MessageInput from '../components/MessageInput';
-import { Message } from '../database/schemas';
-import Database from '../database/database';
+import { useDispatch, useSelector } from 'react-redux';
+import { addMessage } from '../database/actions/messageActions';
+import { AppState } from '../database/database';
 
 const Chat: React.FC = () => {
-  const navigation = useNavigation();
-  const [message, setMessage] = React.useState<string>('');
-  const [messages, setMessages] = React.useState<Message[]>([]);
-  const realm = Database.getRealmInstance();
+    const navigation = useNavigation();
+    const dispatch = useDispatch();
+    const messagesFromRedux = useSelector((state: AppState) => state.messages.messages);
+    const [message, setMessage] = React.useState<string>('');
 
-  useEffect(() => {
-    const savedMessages = realm.objects<Message>('Message');
-    setMessages(Array.from(savedMessages));
-  }, []);
-
-
-  const onMessageSent = () => {
-    const newMessage: Message = {
-      context: message,
-      createdAt: new Date(),
-    };
-
-    realm.write(() => {
-      realm.create<Message>('Message', newMessage);
-    });
-
-    setMessages([...messages, newMessage]);
-    setMessage('');
+  
+    const onMessageSent = () => {
+      dispatch(addMessage(message));
+      setMessage('');
   }
+
+  const renderedMessages = useMemo(() => {
+    return messagesFromRedux.map((message: string, index) => (
+        <View key={index} style={s.message}>
+            <Text>{message}</Text>
+        </View>
+    ));
+}, [messagesFromRedux]);
 
   return (
     <View style={s.chat}>
@@ -37,11 +32,7 @@ const Chat: React.FC = () => {
       <View style={s.main}>
         <View style={s.messages}>
           {
-            messages.map((message, index) => (
-              <View key={index} style={s.message}>
-                <Text>{message.context}</Text>
-              </View>
-            ))
+            renderedMessages
           }
         </View>
       </View>

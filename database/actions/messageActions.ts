@@ -1,5 +1,6 @@
 export const ADD_MESSAGE = 'ADD_MESSAGE';
 
+
 interface AddMessageAction {
   type: typeof ADD_MESSAGE;
   payload: string;
