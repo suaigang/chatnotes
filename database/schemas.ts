@@ -1,14 +1,14 @@
-import Realm from 'realm';
+import { ObjectSchema } from 'realm';
 
-export type Message = {
-  text: string;
+export interface Message {
+  context: string;
   createdAt: Date;
 };
 
-export const MessageSchema: Realm.ObjectSchema = {
+export const MessageSchema: ObjectSchema = {
   name: 'Message',
   properties: {
-    text: 'string',
+    context: 'string',
     createdAt: 'date',
   },
 };
